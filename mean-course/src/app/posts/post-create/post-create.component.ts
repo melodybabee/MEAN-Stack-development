@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { NgForm } from "@angular/forms";
+
+import { PostsService } from "../posts.service";
 
 @Component({
   selector: 'app-post-create',
@@ -7,8 +10,11 @@ import { Component } from '@angular/core';
 })
 export class PostCreateComponent {
   // properties
-  newPost = 'No content';
-  enteredValue = '';
+  enteredContent = '';
+  enteredTitle = '';
+  // could listen from outside and from the parent component
+  // EventEmitter<Post> in order to make a general type Post
+  // postCreated = new EventEmitter<Post>();
 
   // // to input an HTMLTextAreaElement
   // onAddPost(postInput: HTMLTextAreaElement){
@@ -18,8 +24,13 @@ export class PostCreateComponent {
   //   console.dir(postInput);
   //   this.newPost = postInput.value;
   // }
+  constructor( public postsService: PostsService){}
 
-  onAddPost() {
-    this.newPost = this.enteredValue;
+  onAddPost( form: NgForm ) {
+    if(form.invalid){
+      return;
+    }
+    this.postsService.addPost(form.value.title, form.value.content);
+    form.resetForm();
   }
 }
