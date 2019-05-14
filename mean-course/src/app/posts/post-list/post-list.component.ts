@@ -16,16 +16,22 @@ export class PostListComponent implements OnInit, OnDestroy{
   //   {title: 'Third Post', content: 'This is the third post\'s content'}
   // ];
   @Input() posts: Post[]=[];
+  isLoading = false;
   private postsSub: Subscription;
 
   constructor(public postsService: PostsService) {}
 
   ngOnInit(){
+    this.isLoading = true;
     this.postsService.getPosts();
     this.postsSub = this.postsService.getPostUpdateListener()
       .subscribe((posts: Post[]) => {
+        this.isLoading = false;
         this.posts = posts;
       });
+  }
+  onDelete(postId: string){
+    this.postsService.deletePost(postId);
   }
 
   // because it is one page, so that we should know when not make the posts service be execute
