@@ -33,7 +33,7 @@ import { AppRoutingModule } from './app-routing.modules';
     MatProgressSpinnerModule,
     HttpClientModule
   ],
-  providers: [PostsService],
+  providers: [],
   // root component
   bootstrap: [AppComponent]
 })

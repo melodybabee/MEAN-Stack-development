@@ -1,15 +1,17 @@
 const express = require('express');
 const bodyParser = require("body-parser");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const path = require("path");
 
 const postsRoutes = require("./routes/posts");
 
 const app = express();
 
-mongoose.connect(
-  "mongodb+srv://melody:QmSPI4FIpfIAzzjN@cluster0-iyehu.mongodb.net/node-angular?retryWrites=true"
+mongoose
+  .connect(
+    "mongodb+srv://melody:QmSPI4FIpfIAzzjN@cluster0-iyehu.mongodb.net/node-angular?retryWrites=true"
   )
-  .then(() =>{
+  .then(() => {
     console.log('Connecnt to database!')
   })
   .catch(() => {
@@ -18,7 +20,8 @@ mongoose.connect(
 
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use("/images", express.static(path.join("backend/images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -33,7 +36,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// middleware
 
 app.use("/api/posts", postsRoutes);
 
