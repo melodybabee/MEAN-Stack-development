@@ -31,10 +31,7 @@ const storage = multer.diskStorage({
 });
 
 
-router.post(
-  "",
-  multer({ storage: storage }).single("image"),
-  (req,res,next) => {
+router.post("", multer({ storage: storage }).single("image"), (req,res,next) => {
   const url = req.protpcpl + "://" + req.get("host");
   const post = new Post({
     title: req.body.title,
@@ -63,10 +60,7 @@ router.get("/:id",(req, res, next) => {
   });
 });
 
-router.put(
-  "/:id",
-  multer({storage: storage}).single("image"),
-  (req, res, next) => {
+router.put("/:id",multer({storage: storage}).single("image"),(req, res, next) => {
   let imagePath = req.body.imagePath;
   if(req.file){
     const url = req.protocol + "://" + req.get("host");
@@ -86,7 +80,7 @@ router.put(
   });
 });
 
-router.get('', (req, res, next) => {
+router.get("", (req, res, next) => {
   // console.log("first middleware");
   // // if it is executed here, the request will continue its journey
   // // if there is no next when enter a infinite loop
@@ -103,18 +97,33 @@ router.get('', (req, res, next) => {
   //     content: "This is coming from the server"
   //   }
   // ];
-  Post.find().then(documents => {
-    res.status(200).json({
-      message: "Posts fetched successfully!",
-      posts: documents
+  const pageSize = +req.query.pagesize;
+  const currentPage = +req.query.page;
+  const postQuery = Post.find();
+  let fetchedPosts;
+  if (pageSize && currentPage) {
+    postQuery
+      .skip(pageSize * (currentPage - 1))
+      .limit(pageSize);
+  }
+  postQuery
+    .then(documents => {
+      fetchedPosts = documents;
+      return Post.count();
+    })
+    .then(count => {
+      res.status(200).json({
+        message: "Posts fetched successfully",
+        posts: fetchedPosts,
+        maxPosts: count
+      });
     });
-  });
 });
 
 router.delete("/:id", (req, res, next) =>{
-  Post.deleteOne({_id: req.params.id}).then(result => {
+  Post.deleteOne({ _id: req.params.id }).then(result => {
     console.log(result);
-    res.status(200).json({message: 'Post deleted!'});
+    res.status(200).json({ message: 'Post deleted!' });
   });
 });
 

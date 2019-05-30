@@ -16,31 +16,38 @@ export class PostListComponent implements OnInit, OnDestroy{
   //   {title: 'Second Post', content: 'This is the second post\'s content'},
   //   {title: 'Third Post', content: 'This is the third post\'s content'}
   // ];
-  @Input() posts: Post[]=[];
+  @Input() posts: Post[] = [];
   isLoading = false;
-  totalPosts = 10;
+  totalPosts = 0;
   postsPerpage = 2;
+  currentPage = 1;
+  // the dropdown options
   pageSizeOptions = [1,2,5,10];
   private postsSub: Subscription;
 
   constructor(public postsService: PostsService) {}
 
-  ngOnInit(){
+  ngOnInit() {
     this.isLoading = true;
-    this.postsService.getPosts();
+    this.postsService.getPosts(this.postsPerpage, this.currentPage);
     this.postsSub = this.postsService.getPostUpdateListener()
-      .subscribe((posts: Post[]) => {
+      .subscribe((postData: {posts: Post[], postCount: number}) => {
         this.isLoading = false;
-        this.posts = posts;
+        this.totalPosts = postData.postCount;
+        this.posts = postData.posts;
       });
   }
 
-  onChangedPage(pageData: PageEvent){
-    console.log(pageData);
+  onChangedPage(pageData: PageEvent) {
+    this.currentPage = pageData.pageIndex + 1;
+    this.postsPerpage = pageData.pageSize;
+    this.postsService.getPosts(this.postsPerpage, this.currentPage);
   }
 
-  onDelete(postId: string){
-    this.postsService.deletePost(postId);
+  onDelete(postId: string) {
+    this.postsService.deletePost(postId).subscribe(() => {
+      this.postsService.getPosts(this.postsPerpage, this.currentPage);
+    });
   }
 
   // because it is one page, so that we should know when not make the posts service be execute
