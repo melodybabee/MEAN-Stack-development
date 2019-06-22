@@ -21,7 +21,7 @@ export class PostsService {
     // connect to backend
     const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
     this.http
-      .get<{ messsage: string; posts: any, maxPosts: number }>('http://localhost:3001/api/posts' + queryParams)
+      .get<{ messsage: string; posts: any, maxPosts: number }>('http://localhost:3000/api/posts' + queryParams)
       .pipe(
         map(postData => {
         return { posts: postData.posts.map(post => {
@@ -49,7 +49,7 @@ export class PostsService {
 
   getPost(id: string){
     return this.http.get<{ _id: string, title: string, content: string, imagePath: string }>(
-      "http://localhost:3001/api/posts/" + id
+      "http://localhost:3000/api/posts/" + id
     );
   }
 
@@ -60,7 +60,7 @@ export class PostsService {
     postData.append("image", image, title);
     this.http
     .post<{ message: string; post: Post }>(
-      'http://localhost:3001/api/posts',
+      'http://localhost:3000/api/posts',
       postData
     )
     .subscribe(responseData => {
@@ -85,7 +85,7 @@ export class PostsService {
       };
     }
     this.http
-    .put("http://localhost:3001/api/posts/" + id, postData)
+    .put("http://localhost:3000/api/posts/" + id, postData)
     .subscribe(response => {
       this.router.navigate(["/"]);
     });
@@ -93,7 +93,7 @@ export class PostsService {
 
   deletePost(postId: string){
     return this.http
-      .delete("http://localhost:3001/api/posts/" + postId);
+      .delete("http://localhost:3000/api/posts/" + postId);
   }
 }
 
